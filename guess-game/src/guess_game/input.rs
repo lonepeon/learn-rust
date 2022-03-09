@@ -36,7 +36,7 @@ mod tests {
 
     #[test]
     fn read_valid_int() {
-        let mut output = Vec::with_capacity(10);
+        let mut output = Vec::new();
         let value = Console::new("12\n".as_bytes(), &mut output)
             .read_guess()
             .expect("can't get integer value");
@@ -47,7 +47,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "kind: InvalidDigit")]
     fn read_invalid_int() {
-        let mut output = Vec::with_capacity(10);
+        let mut output = Vec::new();
         Console::new("nope\n".as_bytes(), &mut output)
             .read_guess()
             .unwrap();
@@ -55,7 +55,7 @@ mod tests {
 
     #[test]
     fn println() {
-        let mut output = Vec::with_capacity(10);
+        let mut output = Vec::new();
         Console::new("".as_bytes(), &mut output).println("hello");
 
         assert_eq!(

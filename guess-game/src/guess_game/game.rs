@@ -56,7 +56,7 @@ mod tests {
 
     #[test]
     fn run() {
-        let mut output = Vec::with_capacity(10);
+        let mut output = Vec::new();
         let console = input::Console::new("12\n50\n42".as_bytes(), &mut output);
         Game::new(console, 42).run();
 
@@ -68,7 +68,7 @@ mod tests {
 
     #[test]
     fn too_small() {
-        let mut output = Vec::with_capacity(10);
+        let mut output = Vec::new();
         let console = input::Console::new("12\n".as_bytes(), &mut output);
         assert_eq!(
             Hint::TooSmall,
@@ -78,14 +78,14 @@ mod tests {
 
     #[test]
     fn too_big() {
-        let mut output = Vec::with_capacity(10);
+        let mut output = Vec::new();
         let console = input::Console::new("12\n".as_bytes(), &mut output);
         assert_eq!(Hint::TooBig, Game::new(console, 50).guess(&80).unwrap_err());
     }
 
     #[test]
     fn equal() {
-        let mut output = Vec::with_capacity(10);
+        let mut output = Vec::new();
         let console = input::Console::new("12\n".as_bytes(), &mut output);
         Game::new(console, 50)
             .guess(&50)
