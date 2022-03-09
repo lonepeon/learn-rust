@@ -19,11 +19,13 @@ impl<T: io::BufRead, U: io::Write> Game<T, U> {
     }
 
     pub fn run(&mut self) {
+        self.console.println("enter a valid integer:");
+
         loop {
             let trial = match self.console.read_guess() {
                 Ok(trial) => trial,
                 Err(_) => {
-                    println!("can't convert input to integer. enter a valid integer.");
+                    println!("can't convert input to integer.");
                     continue;
                 }
             };
@@ -59,7 +61,7 @@ mod tests {
         Game::new(console, 42).run();
 
         assert_eq!(
-            "too small! try again...\ntoo big! try again...\n🏆 you win! 🏆\n",
+            "enter a valid integer:\ntoo small! try again...\ntoo big! try again...\n🏆 you win! 🏆\n",
             String::from_utf8(output).expect("cannot extract string from output")
         )
     }
