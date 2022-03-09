@@ -13,7 +13,7 @@ impl Game {
         Game { expected: value }
     }
 
-    pub fn guess(&self, value: u32) -> Result<(), Hint> {
+    pub fn guess(&self, value: &u32) -> Result<(), Hint> {
         match value.cmp(&self.expected) {
             std::cmp::Ordering::Less => Err(Hint::TooSmall),
             std::cmp::Ordering::Greater => Err(Hint::TooBig),
