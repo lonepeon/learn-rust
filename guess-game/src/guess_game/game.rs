@@ -2,35 +2,24 @@ use std::io;
 
 use crate::guess_game::{input, Hint, Status};
 
-pub struct Game<T: io::BufRead, U: io::Write> {
-    console: input::Console<T, U>,
-    expected: u32,
-}
+pub fn run<T: io::BufRead, U: io::Write>(console: &mut input::Console<T, U>, expected: u32) {
+    console.println("enter a valid integer:");
 
-impl<T: io::BufRead, U: io::Write> Game<T, U> {
-    pub fn new(console: input::Console<T, U>, expected: u32) -> Game<T, U> {
-        Game { console, expected }
-    }
+    loop {
+        let guess = match console.read_guess() {
+            Ok(trial) => trial,
+            Err(_) => {
+                println!("can't convert input to integer.");
+                continue;
+            }
+        };
 
-    pub fn run(&mut self) {
-        self.console.println("enter a valid integer:");
-
-        loop {
-            let guess = match self.console.read_guess() {
-                Ok(trial) => trial,
-                Err(_) => {
-                    println!("can't convert input to integer.");
-                    continue;
-                }
-            };
-
-            match guess.against(&self.expected) {
-                Status::Miss(Hint::TooSmall) => self.console.println("too small! try again..."),
-                Status::Miss(Hint::TooBig) => self.console.println("too big! try again..."),
-                Status::Victory => {
-                    self.console.println("🏆 you win! 🏆");
-                    break;
-                }
+        match guess.against(&expected) {
+            Status::Miss(Hint::TooSmall) => console.println("too small! try again..."),
+            Status::Miss(Hint::TooBig) => console.println("too big! try again..."),
+            Status::Victory => {
+                console.println("🏆 you win! 🏆");
+                break;
             }
         }
     }
@@ -41,10 +30,10 @@ mod tests {
     use super::*;
 
     #[test]
-    fn run() {
+    fn run_valid() {
         let mut output = Vec::new();
-        let console = input::Console::new("12\n50\n42".as_bytes(), &mut output);
-        Game::new(console, 42).run();
+        let mut console = input::Console::new("12\n50\n42".as_bytes(), &mut output);
+        run(&mut console, 42);
 
         assert_eq!(
             "enter a valid integer:\ntoo small! try again...\ntoo big! try again...\n🏆 you win! 🏆\n",
