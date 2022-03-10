@@ -3,7 +3,6 @@ mod guess_game;
 use guess_game::{game, input};
 use std::io;
 
-use rand;
 use rand::Rng;
 
 fn main() {

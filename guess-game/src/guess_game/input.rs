@@ -23,10 +23,7 @@ impl<T: io::BufRead, U: io::Write> Console<T, U> {
             .read_line(&mut self.buffer)
             .expect("can't read input from STDIN");
 
-        self.buffer
-            .trim()
-            .parse::<u32>()
-            .map(|n| guess_game::Guess(n))
+        self.buffer.trim().parse::<u32>().map(guess_game::Guess)
     }
 
     pub fn println(&mut self, sentence: &str) {
