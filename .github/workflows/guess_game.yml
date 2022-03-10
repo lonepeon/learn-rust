@@ -1,0 +1,22 @@
+name: guess-game
+
+on:
+  push:
+    paths: 'guess-game/**'
+
+jobs:
+  tests:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "checkout code"
+        uses: actions/checkout@v2
+      - name: "setup rust version"
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: 1.59.0
+      - name: "run unit tests"
+        run: make test-unit
+      - name: "run format tests"
+        run: make test-format
+      - name: "run static-check tests"
+        run: make test-staticcheck
