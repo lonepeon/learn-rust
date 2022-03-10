@@ -1,6 +1,6 @@
 use std::io;
 
-use crate::guess_game::{input, Hint, Status};
+use super::{input, Hint, Status};
 
 pub fn run<T: io::BufRead, U: io::Write>(console: &mut input::Console<T, U>, expected: u32) {
     console.println("enter a valid integer:");

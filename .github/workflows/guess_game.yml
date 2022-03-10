@@ -15,8 +15,8 @@ jobs:
         with:
           toolchain: 1.59.0
       - name: "run unit tests"
-        run: make test-unit
+        run: make -C guess-game test-unit
       - name: "run format tests"
-        run: make test-format
+        run: make -C guess-game test-format
       - name: "run static-check tests"
-        run: make test-staticcheck
+        run: make -C guess-game test-staticcheck

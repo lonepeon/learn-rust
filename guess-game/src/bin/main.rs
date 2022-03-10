@@ -1,5 +1,3 @@
-mod guess_game;
-
 use guess_game::{game, input};
 use std::io;
 
