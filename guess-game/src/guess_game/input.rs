@@ -1,3 +1,4 @@
+use crate::guess_game;
 use std::io;
 
 pub struct Console<T: io::BufRead, U: io::Write> {
@@ -15,14 +16,17 @@ impl<T: io::BufRead, U: io::Write> Console<T, U> {
         }
     }
 
-    pub fn read_guess(&mut self) -> Result<u32, std::num::ParseIntError> {
+    pub fn read_guess(&mut self) -> Result<guess_game::Guess, std::num::ParseIntError> {
         self.buffer.clear();
 
         self.input
             .read_line(&mut self.buffer)
             .expect("can't read input from STDIN");
 
-        self.buffer.trim().parse::<u32>()
+        self.buffer
+            .trim()
+            .parse::<u32>()
+            .map(|n| guess_game::Guess(n))
     }
 
     pub fn println(&mut self, sentence: &str) {
@@ -33,6 +37,7 @@ impl<T: io::BufRead, U: io::Write> Console<T, U> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::guess_game;
 
     #[test]
     fn read_valid_int() {
@@ -41,7 +46,7 @@ mod tests {
             .read_guess()
             .expect("can't get integer value");
 
-        assert_eq!(12, value);
+        assert_eq!(guess_game::Guess(12), value);
     }
 
     #[test]
