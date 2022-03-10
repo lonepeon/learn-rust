@@ -8,6 +8,12 @@ pub enum Hint {
     TooBig,
 }
 
+#[derive(Debug, PartialEq, Eq)]
+pub enum Status {
+    Victory,
+    Miss(Hint),
+}
+
 pub struct Game<T: io::BufRead, U: io::Write> {
     console: input::Console<T, U>,
     expected: u32,
@@ -31,9 +37,9 @@ impl<T: io::BufRead, U: io::Write> Game<T, U> {
             };
 
             match self.guess(&trial) {
-                Err(Hint::TooSmall) => self.console.println("too small! try again..."),
-                Err(Hint::TooBig) => self.console.println("too big! try again..."),
-                Ok(()) => {
+                Status::Miss(Hint::TooSmall) => self.console.println("too small! try again..."),
+                Status::Miss(Hint::TooBig) => self.console.println("too big! try again..."),
+                Status::Victory => {
                     self.console.println("🏆 you win! 🏆");
                     break;
                 }
@@ -41,11 +47,11 @@ impl<T: io::BufRead, U: io::Write> Game<T, U> {
         }
     }
 
-    pub fn guess(&self, value: &u32) -> Result<(), Hint> {
+    pub fn guess(&self, value: &u32) -> Status {
         match value.cmp(&self.expected) {
-            std::cmp::Ordering::Less => Err(Hint::TooSmall),
-            std::cmp::Ordering::Greater => Err(Hint::TooBig),
-            std::cmp::Ordering::Equal => Ok(()),
+            std::cmp::Ordering::Less => Status::Miss(Hint::TooSmall),
+            std::cmp::Ordering::Greater => Status::Miss(Hint::TooBig),
+            std::cmp::Ordering::Equal => Status::Victory,
         }
     }
 }
@@ -70,9 +76,10 @@ mod tests {
     fn too_small() {
         let mut output = Vec::new();
         let console = input::Console::new("12\n".as_bytes(), &mut output);
+
         assert_eq!(
-            Hint::TooSmall,
-            Game::new(console, 50).guess(&20).unwrap_err()
+            Status::Miss(Hint::TooSmall),
+            Game::new(console, 50).guess(&20)
         );
     }
 
@@ -80,15 +87,18 @@ mod tests {
     fn too_big() {
         let mut output = Vec::new();
         let console = input::Console::new("12\n".as_bytes(), &mut output);
-        assert_eq!(Hint::TooBig, Game::new(console, 50).guess(&80).unwrap_err());
+
+        assert_eq!(
+            Status::Miss(Hint::TooBig),
+            Game::new(console, 50).guess(&80)
+        );
     }
 
     #[test]
     fn equal() {
         let mut output = Vec::new();
         let console = input::Console::new("12\n".as_bytes(), &mut output);
-        Game::new(console, 50)
-            .guess(&50)
-            .expect("guess should be correct");
+
+        assert_eq!(Status::Victory, Game::new(console, 50).guess(&50));
     }
 }
