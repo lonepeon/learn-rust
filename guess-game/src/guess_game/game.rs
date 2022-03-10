@@ -7,7 +7,7 @@ pub fn run<T: io::BufRead, U: io::Write>(console: &mut input::Console<T, U>, exp
 
     loop {
         let guess = match console.read_guess() {
-            Ok(trial) => trial,
+            Ok(guess) => guess,
             Err(_) => {
                 println!("can't convert input to integer.");
                 continue;
