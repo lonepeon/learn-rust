@@ -1,0 +1,48 @@
+name: wordle
+
+on:
+  push:
+    paths:
+      - 'wordle/**'
+      - '.github/workflows/wordle.yml'
+
+jobs:
+  tests:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "checkout code"
+        uses: actions/checkout@v2
+      - name: "setup rust version"
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: 1.59.0
+      - name: "setup cargo cache"
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: "setup CI/CD tools cache"
+        id: cache-cicd-tools
+        uses: actions/cache@v2
+        with:
+          path: cicd-tools
+          key: ${{ runner.os }}-cicd-tools-v20220315143056
+      - name: "download assert-version binary"
+        if: steps.cache-cicd-tools.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p cicd-tools
+          curl -Lo cicd-tools/assert-version https://github.com/lonepeon/cicd/releases/download/v20220315143056/assert-version-linux-386
+          chmod u+x cicd-tools/assert-version
+      - name: "assert rust version"
+        run: cicd-tools/assert-version rust
+      - name: "run unit tests"
+        run: make -C wordle test-unit
+      - name: "run format tests"
+        run: make -C wordle test-format
+      - name: "run static-check tests"
+        run: make -C wordle test-staticcheck

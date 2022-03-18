@@ -50,7 +50,7 @@ impl WordDistribution {
             return true;
         }
 
-        return false;
+        false
     }
 }
 
@@ -85,7 +85,7 @@ impl Word {
                     return true;
                 }
 
-                return false;
+                false
             });
         }
 
