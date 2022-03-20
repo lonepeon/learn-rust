@@ -54,17 +54,17 @@ pub fn play<R: io::BufRead, W: io::Write>(reader: &mut R, writer: &mut W) {
             crate::game::State::Missed => {
                 for entry in game.history.iter() {
                     for guessed_letter in entry.guessed_letters() {
-                        let color = match guessed_letter.state {
-                            crate::word::State::Misplaced => "33",
-                            crate::word::State::Exact => "32",
-                            crate::word::State::Absent => "39",
+                        let (color, letter) = match guessed_letter {
+                            crate::word::Hint::Misplaced(c) => (33, c),
+                            crate::word::Hint::Exact(c) => (32, c),
+                            crate::word::Hint::Absent(c) => (39, c),
                         };
 
                         write!(
                             writer,
                             "\x1b[1;{}m{}\u{20DE}\x1b[0;39m ",
                             color,
-                            guessed_letter.letter.to_uppercase()
+                            letter.to_uppercase()
                         )
                         .expect("display the guessed letter");
                     }

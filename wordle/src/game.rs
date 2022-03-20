@@ -19,7 +19,7 @@ impl Game {
     }
 
     pub fn guess(&mut self, word: [char; 5]) -> State {
-        let guess = self.word.assess(&word);
+        let guess = self.word.assess(word);
 
         self.history.push(guess);
 
