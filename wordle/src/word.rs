@@ -58,6 +58,10 @@ pub struct GuessLetter {
 pub struct Guess([GuessLetter; 5]);
 
 impl Guess {
+    pub fn guessed_letters(&self) -> &[GuessLetter; 5] {
+        &self.0
+    }
+
     pub fn word(&self) -> [char; 5] {
         self.0.map(|g| g.letter)
     }
