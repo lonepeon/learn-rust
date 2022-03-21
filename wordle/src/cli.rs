@@ -81,27 +81,13 @@ pub fn play<R: io::BufRead, W: io::Write>(reader: &mut R, writer: &mut W) {
             continue;
         }
 
+        let mut chars = guess.chars();
         let input_guess = [
-            guess
-                .chars()
-                .nth(0)
-                .expect("cannot get character at position 0"),
-            guess
-                .chars()
-                .nth(1)
-                .expect("cannot get character at position 1"),
-            guess
-                .chars()
-                .nth(2)
-                .expect("cannot get character at position 2"),
-            guess
-                .chars()
-                .nth(3)
-                .expect("cannot get character at position 3"),
-            guess
-                .chars()
-                .nth(4)
-                .expect("cannot get character at position 4"),
+            chars.next().expect("cannot get character at position 0"),
+            chars.next().expect("cannot get character at position 1"),
+            chars.next().expect("cannot get character at position 2"),
+            chars.next().expect("cannot get character at position 3"),
+            chars.next().expect("cannot get character at position 4"),
         ];
 
         let rst = game.guess(input_guess);

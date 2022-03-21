@@ -43,9 +43,9 @@ impl Word {
 
     pub fn assess(&self, guess: [char; 5]) -> Guess {
         let mut distribution = WordDistribution::new();
-        self.0.iter().for_each(|c| distribution.incr(&c));
+        self.0.iter().for_each(|c| distribution.incr(c));
 
-        let mut hints = guess.map(|letter| Hint::Absent(letter));
+        let mut hints = guess.map(Hint::Absent);
 
         for i in 0..self.0.len() {
             if guess[i] == self.0[i] {
@@ -61,7 +61,7 @@ impl Word {
             };
 
             self.0.iter().any(|expected_char| {
-                if expected_char == guess_char && distribution.decr(&guess_char) {
+                if expected_char == guess_char && distribution.decr(guess_char) {
                     hints[guess_index] = Hint::Misplaced(guess[guess_index]);
                     return true;
                 }
@@ -130,7 +130,7 @@ mod tests {
             let guess = ['a', 'b', 'c', 'd', 'e'];
             let hint = Word::new(['a', 'b', 'c', 'd', 'e']).assess(guess);
 
-            assert_eq!(Guess(guess.map(|l| Exact(l))), hint);
+            assert_eq!(Guess(guess.map(Exact)), hint);
         }
 
         #[test]
@@ -138,7 +138,7 @@ mod tests {
             let guess = ['f', 'g', 'h', 'i', 'j'];
             let hint = Word::new(['a', 'b', 'c', 'd', 'e']).assess(guess);
 
-            assert_eq!(Guess(guess.map(|l| Absent(l))), hint);
+            assert_eq!(Guess(guess.map(Absent)), hint);
         }
 
         #[test]
@@ -146,7 +146,7 @@ mod tests {
             let guess = ['b', 'c', 'd', 'e', 'a'];
             let hint = Word::new(['a', 'b', 'c', 'd', 'e']).assess(guess);
 
-            assert_eq!(Guess(guess.map(|l| Misplaced(l))), hint);
+            assert_eq!(Guess(guess.map(Misplaced)), hint);
         }
 
         #[test]
