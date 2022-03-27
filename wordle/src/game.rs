@@ -1,13 +1,14 @@
 #[derive(Debug, Eq, PartialEq)]
 pub enum State {
     Lost,
-    Missed,
+    InProgress,
     Win,
 }
 
 pub struct Game {
     word: crate::word::Word,
     pub history: Vec<crate::word::Guess>,
+    pub state: State,
 }
 
 impl Game {
@@ -15,23 +16,30 @@ impl Game {
         Game {
             word,
             history: Vec::new(),
+            state: State::InProgress,
         }
     }
 
-    pub fn guess(&mut self, word: [char; 5]) -> State {
+    pub fn guess(&mut self, word: [char; 5]) {
+        if self.state == State::Lost {
+            return;
+        }
+
         let guess = self.word.assess(word);
 
         self.history.push(guess);
 
         if guess.is_guessed() {
-            return State::Win;
+            self.state = State::Win;
+            return;
         }
 
         if self.history.len() >= 6 {
-            return State::Lost;
+            self.state = State::Lost;
+            return;
         }
 
-        State::Missed
+        self.state = State::InProgress;
     }
 
     pub fn tries(&self) -> usize {
@@ -62,19 +70,37 @@ mod tests {
     fn guess_win_on_match() {
         let mut g = Game::new(crate::word::Word::new(['r', 'i', 'g', 'h', 't']));
 
-        assert_eq!(State::Win, g.guess(['r', 'i', 'g', 'h', 't']));
+        g.guess(['r', 'i', 'g', 'h', 't']);
+
+        assert_eq!(State::Win, g.state);
     }
 
     #[test]
     fn guess_lose_after_6_tries() {
         let mut g = Game::new(crate::word::Word::new(['r', 'i', 'g', 'h', 't']));
 
-        assert_eq!(State::Missed, g.guess(['f', 'a', 'l', 's', 'e']));
-        assert_eq!(State::Missed, g.guess(['f', 'a', 'l', 's', 'e']));
-        assert_eq!(State::Missed, g.guess(['f', 'a', 'l', 's', 'e']));
-        assert_eq!(State::Missed, g.guess(['f', 'a', 'l', 's', 'e']));
-        assert_eq!(State::Missed, g.guess(['f', 'a', 'l', 's', 'e']));
-        assert_eq!(State::Lost, g.guess(['f', 'a', 'l', 's', 'e']));
-        assert_eq!(State::Lost, g.guess(['f', 'a', 'l', 's', 'e']));
+        g.guess(['f', 'a', 'l', 's', 'e']);
+        assert_eq!(State::InProgress, g.state);
+
+        g.guess(['f', 'a', 'l', 's', 'e']);
+        assert_eq!(State::InProgress, g.state);
+
+        g.guess(['f', 'a', 'l', 's', 'e']);
+        assert_eq!(State::InProgress, g.state);
+
+        g.guess(['f', 'a', 'l', 's', 'e']);
+        assert_eq!(State::InProgress, g.state);
+
+        g.guess(['f', 'a', 'l', 's', 'e']);
+        assert_eq!(State::InProgress, g.state);
+
+        g.guess(['f', 'a', 'l', 's', 'e']);
+        assert_eq!(State::Lost, g.state);
+
+        g.guess(['f', 'a', 'l', 's', 'e']);
+        assert_eq!(State::Lost, g.state);
+
+        g.guess(['r', 'i', 'g', 'h', 't']);
+        assert_eq!(State::Lost, g.state);
     }
 }

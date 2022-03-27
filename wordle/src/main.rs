@@ -1,6 +1,9 @@
+use rand::Rng;
+
 fn main() {
-    wordle::cli::play(
-        &mut std::io::BufReader::new(std::io::stdin()),
-        &mut std::io::stdout(),
-    );
+    let words = [['R', 'I', 'G', 'H', 'T']];
+    let mut rng = rand::thread_rng();
+    let index = rng.gen_range(0..words.len());
+
+    wordle::cli::play(words[index]);
 }
