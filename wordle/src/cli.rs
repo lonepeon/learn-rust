@@ -1,6 +1,6 @@
 use std::io;
 
-use crate::{game, word};
+use crate::{dictionary, game, word};
 use tui::{layout, style, widgets};
 
 const SCREEN_WIDTH: u16 = 27;
@@ -30,9 +30,8 @@ impl Letter {
     }
 }
 
-pub fn play(wordle_response: [char; 5]) {
-    let expected = String::from_iter(wordle_response);
-    let mut game = game::Game::new(word::Word::new(wordle_response));
+pub fn play(mut wordle: dictionary::Wordle) {
+    let mut game = game::Game::new(word::Word::new(wordle.split()));
     let mut input = String::new();
 
     crossterm::terminal::enable_raw_mode().expect("cannot set terminal to raw mode");
@@ -44,7 +43,7 @@ pub fn play(wordle_response: [char; 5]) {
     terminal.clear().expect("cannot clear screen");
     loop {
         terminal
-            .draw(|f| draw_ui(f, &expected, &game, &input))
+            .draw(|f| draw_ui(f, &wordle, &game, &input))
             .expect("can't draw UI");
 
         if game.state != game::State::InProgress {
@@ -57,7 +56,7 @@ pub fn play(wordle_response: [char; 5]) {
 
 fn draw_ui<B: tui::backend::Backend>(
     f: &mut tui::Frame<B>,
-    expected: &str,
+    wordle: &dictionary::Wordle,
     game: &game::Game,
     input: &str,
 ) {
@@ -71,7 +70,7 @@ fn draw_ui<B: tui::backend::Backend>(
         .split(size);
 
     let main_block = widgets::Block::default()
-        .title("Wordle")
+        .title(format!("Wordle ({})", wordle.seed))
         .borders(widgets::Borders::ALL);
     f.render_widget(main_block, app_layout[0]);
 
@@ -98,7 +97,7 @@ fn draw_ui<B: tui::backend::Backend>(
 
     match game.state {
         game::State::Lost => {
-            lost_popup(f, size, expected);
+            lost_popup(f, size, &wordle.word);
             f.set_cursor(size.left(), size.bottom());
         }
         game::State::Win => {
