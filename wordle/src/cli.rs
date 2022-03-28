@@ -47,6 +47,7 @@ pub fn play(mut wordle: dictionary::Wordle) {
             .expect("can't draw UI");
 
         if game.state != game::State::InProgress {
+            crossterm::terminal::disable_raw_mode().expect("cannot unset terminal raw mode");
             std::process::exit(0);
         }
 
@@ -114,6 +115,7 @@ fn read_event(input: &mut String, game: &mut game::Game) {
     if let crossterm::event::Event::Key(key) = crossterm::event::read().expect("read event") {
         match (key.modifiers, key.code) {
             (crossterm::event::KeyModifiers::CONTROL, crossterm::event::KeyCode::Char('c')) => {
+                crossterm::terminal::disable_raw_mode().expect("cannot unset terminal raw mode");
                 std::process::exit(0);
             }
             (_, crossterm::event::KeyCode::Enter) => {
